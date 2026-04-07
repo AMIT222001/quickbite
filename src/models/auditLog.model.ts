@@ -1,0 +1,55 @@
+import { DataTypes, Model } from 'sequelize';
+import sequelize from '../config/database.js';
+import { AuditLogAttributes, AuditLogCreationAttributes } from './interfaces/index.js';
+
+class AuditLog extends Model<AuditLogAttributes, AuditLogCreationAttributes> implements AuditLogAttributes {
+  public id!: string;
+  public userId?: string;
+  public action!: string;
+  public resource?: string;
+  public ip?: string;
+  public userAgent?: string;
+  public metadata?: any;
+  public readonly createdAt!: Date;
+}
+
+AuditLog.init(
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    action: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    resource: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    ip: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    userAgent: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    metadata: {
+      type: DataTypes.JSONB,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    tableName: 'audit_logs',
+    updatedAt: false, // Audit logs are immutable
+  }
+);
+
+export default AuditLog;
