@@ -14,6 +14,26 @@ export interface UserAttributes {
   lockUntil?: Date;
   mfaEnabled?: boolean;
   mfaSecret?: string;
+  passwordChangedAt?: Date;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
 }
 
-export interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'password' | 'firstName' | 'lastName' | 'isActive' | 'roleId' | 'role' | 'loginAttempts' | 'lockUntil' | 'mfaEnabled' | 'mfaSecret'> {}
+export interface UserCreationAttributes
+  extends Optional<
+    UserAttributes,
+    | 'id'
+    | 'password'
+    | 'firstName'
+    | 'lastName'
+    | 'isActive'
+    | 'roleId'
+    | 'role'
+    | 'loginAttempts'
+    | 'lockUntil'
+    | 'mfaEnabled'
+    | 'mfaSecret'
+    | 'passwordChangedAt'
+    | 'passwordResetToken'
+    | 'passwordResetExpires'
+  > {}

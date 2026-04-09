@@ -1,15 +1,15 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js';
-import { RefreshTokenAttributes, RefreshTokenCreationAttributes } from './interfaces/index.js';
+import sequelize from '../../config/database.js';
+import { RefreshTokenAttributes, RefreshTokenCreationAttributes } from '../interfaces/index.js';
 
 class RefreshToken extends Model<RefreshTokenAttributes, RefreshTokenCreationAttributes> implements RefreshTokenAttributes {
-  public id!: string;
-  public userId!: string;
-  public token!: string;
-  public expiresAt!: Date;
-  public revoked!: boolean;
-  public replacedByToken?: string;
-  public createdByIp?: string;
+  declare id: string;
+  declare userId: string;
+  declare token: string;
+  declare expiresAt: Date;
+  declare revoked: boolean;
+  declare replacedByToken?: string;
+  declare createdByIp?: string;
 
   public get isExpired(): boolean {
     return new Date() >= this.expiresAt;

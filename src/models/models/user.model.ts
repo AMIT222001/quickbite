@@ -1,27 +1,30 @@
 import { DataTypes, Model, Op } from 'sequelize';
 import argon2 from 'argon2';
 import crypto from 'crypto';
-import sequelize from '../config/database.js';
-import { env } from '../config/index.js';
-import { UserAttributes, UserCreationAttributes } from './interfaces/index.js';
-import type { RoleAttributes } from './interfaces/index.js';
+import sequelize from '../../config/database.js';
+import { env } from '../../config/index.js';
+import { UserAttributes, UserCreationAttributes } from '../interfaces/index.js';
+import type { RoleAttributes } from '../interfaces/index.js';
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
-  public id!: string;
-  public email!: string;
-  public password?: string;
-  public firstName!: string;
-  public lastName!: string;
-  public isActive!: boolean;
-  public roleId?: string;
-  public role?: RoleAttributes;
-  public loginAttempts!: number;
-  public lockUntil?: Date;
-  public mfaEnabled!: boolean;
-  public mfaSecret?: string;
+   declare id: string;
+declare email: string;
+declare password?: string;
+declare firstName: string;
+declare lastName: string;
+declare isActive: boolean;
+declare roleId?: string;
+declare role?: RoleAttributes;
+declare loginAttempts: number;
+declare lockUntil?: Date;
+declare mfaEnabled: boolean;
+declare mfaSecret?: string;
+declare passwordChangedAt?: Date;
+declare passwordResetToken?: string;
+declare passwordResetExpires?: Date;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+declare readonly createdAt: Date;
+declare readonly updatedAt: Date;
 
   // Password hashing hook
   public static async hashPassword(password: string): Promise<string> {
@@ -57,6 +60,17 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
     let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
+  }
+
+  // Password Reset Token generation
+  public createPasswordResetToken(): string {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    this.passwordResetToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+    this.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    return resetToken;
   }
 }
 
@@ -111,6 +125,18 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    passwordChangedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    passwordResetExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   {
     sequelize,
@@ -122,15 +148,27 @@ User.init(
       withSecret: { attributes: { include: ['password', 'mfaSecret'] } },
     },
     hooks: {
-      beforeSave: async (user: User) => {
-        if (user.password && user.changed('password')) {
-          user.password = await User.hashPassword(user.password);
-        }
-        if (user.mfaSecret && user.changed('mfaSecret')) {
-          user.mfaSecret = User.encryptSecret(user.mfaSecret);
-        }
-      },
-    },
+  beforeCreate: async (user: User) => {
+  console.log("🔥 beforeCreate hook running");
+  console.log("Password before hash:", user.password);
+    console.log(user);
+  if (user.password) {
+    user.password = await User.hashPassword(user.password);
+  }
+
+  console.log("Password after hash:", user.password);
+},
+  beforeUpdate: async (user: User) => {
+    if (user.password && user.changed('password')) {
+      user.password = await User.hashPassword(user.password);
+      user.passwordChangedAt = new Date(Date.now() - 1000);
+    }
+
+    if (user.mfaSecret && user.changed('mfaSecret')) {
+      user.mfaSecret = User.encryptSecret(user.mfaSecret);
+    }
+  },
+}
   }
 );
 

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../config/index.js';
 import { AppError, catchAsync } from '../utils/index.js';
-import { User, Role } from '../models/index.js';
+import { User, Role, Permission } from '../models/index.js';
 import { StatusCodes, Messages } from '../constants/index.js';
 import type { JWTPayload } from '../types/index.js';
 
@@ -33,7 +33,13 @@ const protect = catchAsync(async (req: Request, res: Response, next: NextFunctio
 
   // 3) Check if user still exists
   const currentUser = await User.findByPk(decoded.id, {
-    include: [{ model: Role, as: 'role' }],
+    include: [
+      {
+        model: Role,
+        as: 'role',
+        include: [{ model: Permission, as: 'permissions' }],
+      },
+    ],
   });
 
   if (!currentUser) {

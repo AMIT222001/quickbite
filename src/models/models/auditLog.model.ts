@@ -1,16 +1,16 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js';
-import { AuditLogAttributes, AuditLogCreationAttributes } from './interfaces/index.js';
+import sequelize from '../../config/database.js';
+import { AuditLogAttributes, AuditLogCreationAttributes } from '../interfaces/index.js';
 
 class AuditLog extends Model<AuditLogAttributes, AuditLogCreationAttributes> implements AuditLogAttributes {
-  public id!: string;
-  public userId?: string;
-  public action!: string;
-  public resource?: string;
-  public ip?: string;
-  public userAgent?: string;
-  public metadata?: any;
-  public readonly createdAt!: Date;
+  declare id: string;
+  declare userId?: string;
+  declare action: string;
+  declare resource?: string;
+  declare ip?: string;
+  declare userAgent?: string;
+  declare metadata?: any;
+  declare readonly createdAt: Date;
 }
 
 AuditLog.init(

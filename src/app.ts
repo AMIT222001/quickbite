@@ -5,7 +5,14 @@ import { errorHandler, securityMiddleware, httpLogger, globalRateLimiter, saniti
 import { StatusCodes, Messages } from './constants/index.js';
 
 // Route imports
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import swaggerUi from 'swagger-ui-express';
 import mainRouter from './modules/routes.js';
+
+// Read swagger.json
+const swaggerPath = join(process.cwd(), 'src/swagger.json');
+const swaggerDocument = JSON.parse(readFileSync(swaggerPath, 'utf8'));
 
 const app = express();
 
@@ -29,6 +36,7 @@ app.use('/api', globalRateLimiter);
 app.use(sanitize);
 
 // 2) ROUTES
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1', mainRouter);
 
 

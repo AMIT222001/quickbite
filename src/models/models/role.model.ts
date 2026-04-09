@@ -1,14 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
-import sequelize from '../config/database.js';
-import { RoleAttributes, RoleCreationAttributes } from './interfaces/index.js';
+import sequelize from '../../config/database.js';
+import { RoleAttributes, RoleCreationAttributes } from '../interfaces/index.js';
 
 class Role extends Model<RoleAttributes, RoleCreationAttributes> implements RoleAttributes {
-  public id!: string;
-  public name!: string;
-  public description?: string;
+  declare id: string;
+  declare name: string;
+  declare description?: string;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 }
 
 Role.init(

@@ -13,6 +13,8 @@ export const Messages = {
   AUTH_PASSWORD_REQUIRED: 'Password is required',
   AUTH_EMAIL_EXISTS: 'User with this email already exists',
   AUTH_INCORRECT_CREDENTIALS: 'Incorrect email or password',
+  AUTH_INVALID_CREDENTIALS: 'Invalid email or password',
+  AUTH_INVALID_TOKEN: 'Token is invalid or has expired',
   AUTH_DEACTIVATED: 'Your account is deactivated. Please contact support.',
   AUTH_LOGGED_IN_REQUIRED: 'You must be logged in to access this resource.',
   AUTH_NOT_LOGGED_IN: 'You are not logged in! Please log in to get access.',
