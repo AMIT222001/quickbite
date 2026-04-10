@@ -9,7 +9,12 @@
     "build": "tsc",
     "build:prod": "tsc -p tsconfig.prod.json",
     "start": "node dist/server.js",
-    "db:migrate": "tsx src/db/migrate.ts"
+    "db:migrate": "tsx src/db/migrate.ts up",
+    "db:migrate:down": "tsx src/db/migrate.ts down",
+    "db:migrate:pending": "tsx src/db/migrate.ts pending",
+    "db:seed": "tsx src/db/migrate.ts seed",
+    "db:seed:down": "tsx src/db/migrate.ts seed:down",
+    "db:seed:pending": "tsx src/db/migrate.ts seed:pending"
   },
   "keywords": [],
   "author": "",
