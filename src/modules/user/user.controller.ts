@@ -21,7 +21,7 @@ export const getMe = catchAsync(async (req: Request, res: Response, next: NextFu
 export const updateMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // 1) Post error if user tries to update password here
   if (req.body.password) {
-    return next(new AppError('This route is not for password updates. Please use /auth/change-password.', StatusCodes.BAD_REQUEST));
+    return next(new AppError(Messages.INVALID_PASSWORD_ROUTE, StatusCodes.BAD_REQUEST));
   }
 
   // 2) Filtered out unwanted fields names that are not allowed to be updated

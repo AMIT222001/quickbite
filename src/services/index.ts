@@ -1,2 +1,3 @@
 // Export services here
-export {};
+export * from './kafka.service.js';
+export { AuditService, AuditActions } from './audit.service.js';

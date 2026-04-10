@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { Order, OrderItem, MenuItem, Restaurant, User } from '../../models/index.js';
 import { AppError, catchAsync } from '../../utils/index.js';
-import { StatusCodes } from '../../constants/index.js';
-import { kafkaService } from '../../services/kafka.service.js';
+import { StatusCodes, KafkaTopics, Messages } from '../../constants/index.js';
+import { kafkaService } from '../../services/index.js';
 import sequelize from '../../config/database.js';
 
 /**
@@ -15,7 +15,7 @@ export const placeOrder = catchAsync(async (req: Request, res: Response, next: N
   // 1) Verify restaurant exists
   const restaurant = await Restaurant.findByPk(restaurantId);
   if (!restaurant) {
-    return next(new AppError('No restaurant found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   // 2) Create order in transaction
@@ -63,7 +63,7 @@ export const placeOrder = catchAsync(async (req: Request, res: Response, next: N
   });
 
   // 3) Send Kafka event (Asynchronous)
-  await kafkaService.sendOrderStatusUpdate(result.id, 'PENDING');
+  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: result.id, status: 'PENDING' }, result.id);
 
   res.status(StatusCodes.CREATED).json({
     status: 'success',
@@ -91,7 +91,7 @@ export const getOrder = catchAsync(async (req: Request, res: Response, next: Nex
   });
 
   if (!order) {
-    return next(new AppError('No order found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.ORDER_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   // Check if current user is the owner of the order, restaurant owner, or admin
@@ -100,7 +100,7 @@ export const getOrder = catchAsync(async (req: Request, res: Response, next: Nex
     order.restaurant?.ownerId !== req.user!.id &&
     req.user!.role?.name !== 'admin'
   ) {
-    return next(new AppError('You do not have permission to view this order', StatusCodes.FORBIDDEN));
+    return next(new AppError(Messages.ORDER_FORBIDDEN_VIEW, StatusCodes.FORBIDDEN));
   }
 
   res.status(StatusCodes.OK).json({
@@ -152,18 +152,18 @@ export const updateOrderStatus = catchAsync(async (req: Request, res: Response, 
   });
 
   if (!order) {
-    return next(new AppError('No order found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.ORDER_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   // Check if owner or admin
   if (order.restaurant?.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
-    return next(new AppError('You do not have permission to update this order', StatusCodes.FORBIDDEN));
+    return next(new AppError(Messages.ORDER_FORBIDDEN_UPDATE, StatusCodes.FORBIDDEN));
   }
 
   await order.update({ status });
 
   // Send Kafka event
-  await kafkaService.sendOrderStatusUpdate(order.id, status);
+  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: order.id, status }, order.id);
 
   res.status(StatusCodes.OK).json({
     status: 'success',
@@ -187,18 +187,18 @@ export const cancelOrder = catchAsync(async (req: Request, res: Response, next: 
 
   // Check ownership (only the user who placed the order or admin can cancel)
   if (order.userId !== req.user!.id && req.user!.role?.name !== 'admin') {
-    return next(new AppError('You do not have permission to cancel this order', StatusCodes.FORBIDDEN));
+    return next(new AppError(Messages.ORDER_FORBIDDEN_CANCEL, StatusCodes.FORBIDDEN));
   }
 
   // Only allow cancellation if order is still PENDING
   if (order.status !== 'PENDING') {
-    return next(new AppError(`Order cannot be cancelled in its current state: ${order.status}`, StatusCodes.BAD_REQUEST));
+    return next(new AppError(Messages.ORDER_CANCEL_INVALID_STATE(order.status), StatusCodes.BAD_REQUEST));
   }
 
   await order.update({ status: 'CANCELLED' });
 
   // Send Kafka event
-  await kafkaService.sendOrderStatusUpdate(order.id, 'CANCELLED');
+  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: order.id, status: 'CANCELLED' }, order.id);
 
   res.status(StatusCodes.OK).json({
     status: 'success',

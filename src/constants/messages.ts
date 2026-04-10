@@ -30,7 +30,23 @@ export const Messages = {
   USER_NOT_FOUND: 'No user found with that ID',
   USER_DEACTIVATED: 'User deactivated successfully',
 
+  // Roles
+  ROLE_NOT_FOUND: 'Role not found',
+  DEFAULT_ROLE_NOT_FOUND: 'Default role not found',
+
+  // Restaurant
+  RESTAURANT_NOT_FOUND: 'No restaurant found with that ID',
+  MENU_NOT_FOUND: 'No menu found with that ID',
+
+  // Order
+  ORDER_NOT_FOUND: 'No order found with that ID',
+  ORDER_FORBIDDEN_VIEW: 'You do not have permission to view this order',
+  ORDER_FORBIDDEN_UPDATE: 'You do not have permission to update this order',
+  ORDER_FORBIDDEN_CANCEL: 'You do not have permission to cancel this order',
+  ORDER_CANCEL_INVALID_STATE: (status: string) => `Order cannot be cancelled in its current state: ${status}`,
+
   // System
   HEALTH_CHECK_SUCCESS: 'System is healthy',
   RATE_LIMIT_EXCEEDED: 'Too many requests from this IP, please try again later.',
+  INVALID_PASSWORD_ROUTE: 'This route is not for password updates. Please use /auth/change-password.',
 } as const;

@@ -71,7 +71,7 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
   // 1) Find default 'user' role
   const userRole = await Role.findOne({ where: { name: 'user' } });
   if (!userRole) {
-    return next(new AppError('Default role not found', StatusCodes.INTERNAL_SERVER_ERROR));
+    return next(new AppError(Messages.DEFAULT_ROLE_NOT_FOUND, StatusCodes.INTERNAL_SERVER_ERROR));
   }
   // const hashedPassword:string=await User.hashPassword(password)
   // 2) Create new user

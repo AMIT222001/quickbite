@@ -52,7 +52,7 @@ export const updateUserRole = catchAsync(async (req: Request, res: Response, nex
   // 1) Find the target role
   const targetRole = await Role.findOne({ where: { name: role } });
   if (!targetRole) {
-    return next(new AppError('Role not found', StatusCodes.BAD_REQUEST));
+    return next(new AppError(Messages.ROLE_NOT_FOUND, StatusCodes.BAD_REQUEST));
   }
 
   // 2) Update user's role

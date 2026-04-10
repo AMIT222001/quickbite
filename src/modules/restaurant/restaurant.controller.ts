@@ -61,7 +61,7 @@ export const getRestaurant = catchAsync(async (req: Request, res: Response, next
   });
 
   if (!restaurant) {
-    return next(new AppError('No restaurant found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   res.status(StatusCodes.OK).json({
@@ -80,7 +80,7 @@ export const updateRestaurant = catchAsync(async (req: Request, res: Response, n
   const restaurant = await Restaurant.findByPk(id as string);
 
   if (!restaurant) {
-    return next(new AppError('No restaurant found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   // Check ownership (simple check, full RBAC might handle this in middleware)
@@ -106,7 +106,7 @@ export const deleteRestaurant = catchAsync(async (req: Request, res: Response, n
   const restaurant = await Restaurant.findByPk(id as string);
 
   if (!restaurant) {
-    return next(new AppError('No restaurant found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   await restaurant.destroy();
@@ -126,7 +126,7 @@ export const createMenu = catchAsync(async (req: Request, res: Response, next: N
 
   const restaurant = await Restaurant.findByPk(restaurantId as string);
   if (!restaurant) {
-    return next(new AppError('No restaurant found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   if (restaurant.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
@@ -159,7 +159,7 @@ export const addMenuItem = catchAsync(async (req: Request, res: Response, next: 
   });
 
   if (!menu) {
-    return next(new AppError('No menu found with that ID', StatusCodes.NOT_FOUND));
+    return next(new AppError(Messages.MENU_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
   if (menu.restaurant?.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
