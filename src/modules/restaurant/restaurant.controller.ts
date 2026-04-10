@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Restaurant, Menu, MenuItem, User } from '../../models/index.js';
 import { AppError, catchAsync } from '../../utils/index.js';
-import { StatusCodes, Messages } from '../../constants/index.js';
+import { StatusCodes, Messages, RestaurantStatuses, UserRoles, Status } from '../../constants.js';
 
 /**
  * Create a new restaurant
@@ -15,11 +15,11 @@ export const createRestaurant = catchAsync(async (req: Request, res: Response, n
     phone,
     description,
     ownerId: req.user!.id,
-    status: 'ACTIVE',
+    status: RestaurantStatuses.ACTIVE,
   });
 
   res.status(StatusCodes.CREATED).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       restaurant: newRestaurant,
     },
@@ -31,12 +31,12 @@ export const createRestaurant = catchAsync(async (req: Request, res: Response, n
  */
 export const getAllRestaurants = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const restaurants = await Restaurant.findAll({
-    where: { status: 'ACTIVE' },
+    where: { status: RestaurantStatuses.ACTIVE },
     include: [{ model: User, as: 'owner', attributes: ['id', 'firstName', 'lastName'] }],
   });
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     results: restaurants.length,
     data: {
       restaurants,
@@ -65,7 +65,7 @@ export const getRestaurant = catchAsync(async (req: Request, res: Response, next
   }
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       restaurant,
     },
@@ -84,14 +84,14 @@ export const updateRestaurant = catchAsync(async (req: Request, res: Response, n
   }
 
   // Check ownership (simple check, full RBAC might handle this in middleware)
-  if (restaurant.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
+  if (restaurant.ownerId !== req.user!.id && req.user!.role?.name !== UserRoles.ADMIN) {
     return next(new AppError(Messages.AUTH_NO_PERMISSION, StatusCodes.FORBIDDEN));
   }
 
   await restaurant.update(req.body);
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       restaurant,
     },
@@ -112,7 +112,7 @@ export const deleteRestaurant = catchAsync(async (req: Request, res: Response, n
   await restaurant.destroy();
 
   res.status(StatusCodes.NO_CONTENT).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: null,
   });
 });
@@ -129,7 +129,7 @@ export const createMenu = catchAsync(async (req: Request, res: Response, next: N
     return next(new AppError(Messages.RESTAURANT_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
-  if (restaurant.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
+  if (restaurant.ownerId !== req.user!.id && req.user!.role?.name !== UserRoles.ADMIN) {
     return next(new AppError(Messages.AUTH_NO_PERMISSION, StatusCodes.FORBIDDEN));
   }
 
@@ -140,7 +140,7 @@ export const createMenu = catchAsync(async (req: Request, res: Response, next: N
   });
 
   res.status(StatusCodes.CREATED).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       menu: newMenu,
     },
@@ -162,7 +162,7 @@ export const addMenuItem = catchAsync(async (req: Request, res: Response, next: 
     return next(new AppError(Messages.MENU_NOT_FOUND, StatusCodes.NOT_FOUND));
   }
 
-  if (menu.restaurant?.ownerId !== req.user!.id && req.user!.role?.name !== 'admin') {
+  if (menu.restaurant?.ownerId !== req.user!.id && req.user!.role?.name !== UserRoles.ADMIN) {
     return next(new AppError(Messages.AUTH_NO_PERMISSION, StatusCodes.FORBIDDEN));
   }
 
@@ -174,7 +174,7 @@ export const addMenuItem = catchAsync(async (req: Request, res: Response, next: 
   });
 
   res.status(StatusCodes.CREATED).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       item: newItem,
     },

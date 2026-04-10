@@ -1,9 +1,10 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../../config/database.js';
-import { OrderAttributes, OrderCreationAttributes, OrderStatus } from '../interfaces/index.js';
+import { OrderAttributes, OrderCreationAttributes } from '../interfaces/index.js';
 import User from './user.model.js';
 import Restaurant from './restaurant.model.js';
 import OrderItem from './orderItem.model.js';
+import { OrderStatuses, OrderStatus } from '../../constants.js';
 
 class Order extends Model<OrderAttributes, OrderCreationAttributes> implements OrderAttributes {
   declare id: string;
@@ -41,8 +42,8 @@ Order.init(
       allowNull: false,
     },
     status: {
-      type: DataTypes.ENUM('PENDING', 'PREPARING', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'),
-      defaultValue: 'PENDING',
+      type: DataTypes.ENUM(...Object.values(OrderStatuses)),
+      defaultValue: OrderStatuses.PENDING,
     },
     deliveryAddress: {
       type: DataTypes.STRING,

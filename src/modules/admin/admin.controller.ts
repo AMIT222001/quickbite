@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User, Role } from '../../models/index.js';
 import { catchAsync, AppError } from '../../utils/index.js';
-import { StatusCodes, Messages } from '../../constants/index.js';
+import { StatusCodes, Messages, Status } from '../../constants.js';
 import { Op } from 'sequelize';
 
 /**
@@ -35,7 +35,7 @@ export const getAllUsers = catchAsync(async (req: Request, res: Response, next: 
   });
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     results: count,
     data: {
       users: rows,
@@ -66,7 +66,7 @@ export const updateUserRole = catchAsync(async (req: Request, res: Response, nex
   }
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     message: `User role updated to ${role}`,
   });
 });
@@ -87,7 +87,7 @@ export const updateUserStatus = catchAsync(async (req: Request, res: Response, n
   }
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     message: `User account ${isActive ? 'activated' : 'deactivated'} successfully`,
   });
 });

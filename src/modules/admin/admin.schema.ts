@@ -1,9 +1,10 @@
 import { z } from 'zod';
+import { UserRoles } from '../../constants.js';
 
 export const updateRoleSchema = z.object({
   body: z.object({
     userId: z.string().uuid('Invalid user ID'),
-    role: z.enum(['admin', 'user']),
+    role: z.enum([UserRoles.ADMIN, UserRoles.USER]),
   }),
 });
 

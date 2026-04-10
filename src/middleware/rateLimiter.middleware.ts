@@ -1,5 +1,5 @@
 import rateLimit from 'express-rate-limit';
-import { StatusCodes, Status } from '../constants/index.js';
+import { StatusCodes, Status, Messages } from '../constants.js';
 
 /**
  * Strict rate limiter for auth endpoints to prevent brute-force attacks.
@@ -29,6 +29,6 @@ export const globalRateLimiter = rateLimit({
   statusCode: StatusCodes.TOO_MANY_REQUESTS,
   message: {
     status: Status.FAIL,
-    message: 'Too many requests from this IP, please try again later.',
+    message: Messages.RATE_LIMIT_EXCEEDED,
   },
 });

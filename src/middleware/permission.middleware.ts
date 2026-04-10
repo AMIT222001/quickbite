@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/index.js';
-import { StatusCodes, Messages } from '../constants/index.js';
+import { StatusCodes, Messages, UserRoles } from '../constants.js';
 import { permission } from 'node:process';
 
 /**
@@ -16,7 +16,7 @@ const hasPermission = (...requiredPermissions: string[]) => {
 
     // 2) Super Admin Bypass (optional: if role name is 'admin', allow all)
    
-    if (req.user.role?.name === 'admin') {
+    if (req.user.role?.name === UserRoles.ADMIN) {
       return next();
     }
 

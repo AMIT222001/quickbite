@@ -1,6 +1,5 @@
 import { Optional } from 'sequelize';
-
-export type OrderStatus = 'PENDING' | 'PREPARING' | 'OUT_FOR_DELIVERY' | 'DELIVERED' | 'CANCELLED';
+import { OrderStatus } from '../../constants.js';
 
 export interface OrderAttributes {
   id: string;

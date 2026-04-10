@@ -1,6 +1,75 @@
 /**
- * Success and Error Messages
+ * Centralized Constants for the QuickBite Application
  */
+
+// --- Environments ---
+export const Environments = {
+  DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
+  TEST: 'test',
+} as const;
+
+// --- Roles ---
+export const UserRoles = {
+  ADMIN: 'admin',
+  USER: 'user',
+  RESTAURANT_OWNER: 'owner',
+} as const;
+
+// --- Order Statuses ---
+export const OrderStatuses = {
+  PENDING: 'PENDING',
+  PREPARING: 'PREPARING',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+// --- Restaurant Statuses ---
+export const RestaurantStatuses = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+} as const;
+
+// --- HTTP Status Codes ---
+export const StatusCodes = {
+  OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
+  MFA_REQUIRED: 403, 
+  INTERNAL_SERVER_ERROR: 500,
+} as const;
+
+// --- Kafka Constants ---
+export const KafkaTopics = {
+  ORDER_STATUS_UPDATES: 'order-status-updates',
+  USER_EVENTS: 'user-events',
+  RESTAURANT_EVENTS: 'restaurant-events',
+} as const;
+
+export const KafkaClientIDs = {
+  BACKEND: 'quickbite-backend',
+} as const;
+
+// --- Common Status Strings ---
+export const Status = {
+  SUCCESS: 'success',
+  FAIL: 'fail',
+  ERROR: 'error',
+} as const;
+
+export const HealthStatus = {
+  UP: 'UP',
+  DOWN: 'DOWN',
+} as const;
+
+// --- Success and Error Messages ---
 export const Messages = {
   // Common
   NOT_FOUND: (resource: string) => `Can't find ${resource} on this server!`,
@@ -50,3 +119,10 @@ export const Messages = {
   RATE_LIMIT_EXCEEDED: 'Too many requests from this IP, please try again later.',
   INVALID_PASSWORD_ROUTE: 'This route is not for password updates. Please use /auth/change-password.',
 } as const;
+
+// --- Types ---
+export type StatusCode = typeof StatusCodes[keyof typeof StatusCodes];
+export type UserRole = typeof UserRoles[keyof typeof UserRoles];
+export type OrderStatus = typeof OrderStatuses[keyof typeof OrderStatuses];
+export type RestaurantStatus = typeof RestaurantStatuses[keyof typeof RestaurantStatuses];
+export type Environment = typeof Environments[keyof typeof Environments];

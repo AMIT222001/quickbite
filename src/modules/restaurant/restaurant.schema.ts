@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { RestaurantStatuses } from '../../constants.js';
 
 export const createRestaurantSchema = z.object({
   body: z.object({
@@ -15,7 +16,7 @@ export const updateRestaurantSchema = z.object({
     address: z.string().optional(),
     phone: z.string().optional(),
     description: z.string().optional(),
-    status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+    status: z.enum(Object.values(RestaurantStatuses) as [string, ...string[]]).optional(),
   }),
   params: z.object({
     id: z.string().uuid('Invalid restaurant ID'),

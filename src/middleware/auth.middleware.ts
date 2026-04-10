@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { env } from '../config/index.js';
 import { AppError, catchAsync } from '../utils/index.js';
 import { User, Role, Permission } from '../models/index.js';
-import { StatusCodes, Messages } from '../constants/index.js';
+import { StatusCodes, Messages } from '../constants.js';
 import type { JWTPayload } from '../types/index.js';
 
 declare global {

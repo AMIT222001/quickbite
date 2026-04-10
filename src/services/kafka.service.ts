@@ -1,7 +1,7 @@
 import { Kafka, Producer, Consumer, EachMessageHandler } from 'kafkajs';
 import { env } from '../config/index.js';
 import logger from '../config/logger.js';
-import { KafkaClientIDs } from '../constants/index.js';
+import { KafkaClientIDs } from '../constants.js';
 
 class KafkaService {
   private kafka: Kafka;

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import logger from '../config/logger.js';
 import AppError from '../utils/AppError.js';
 import { env } from '../config/env.js';
-import { StatusCodes, Messages, Status } from '../constants/index.js';
+import { StatusCodes, Messages, Status, Environments } from '../constants.js';
 
 interface AppErrorLike {
   statusCode?: number;
@@ -16,7 +16,7 @@ const errorHandler = (err: AppErrorLike, req: Request, res: Response, next: Next
   err.statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
   err.status = err.status || Status.ERROR;
 
-  if (env.NODE_ENV === 'development') {
+  if (env.NODE_ENV === Environments.DEVELOPMENT) {
     logger.error({
       message: err.message,
       stack: err.stack,

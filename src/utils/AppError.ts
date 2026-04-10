@@ -1,4 +1,4 @@
-import { Status } from '../constants/index.js';
+import { Status } from '../constants.js';
 
 class AppError extends Error {
   public statusCode: number;

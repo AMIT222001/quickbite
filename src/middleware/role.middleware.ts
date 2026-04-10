@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import AppError from '../utils/AppError.js';
-import { StatusCodes, Messages } from '../constants/index.js';
+import { StatusCodes, Messages, UserRole } from '../constants.js';
 
 /**
  * Middleware to restrict access to certain roles
  * @param {string[]} roles - Array of allowed roles (e.g., ['admin', 'manager'])
  */
-const restrictTo = (...roles: string[]) => {
+const restrictTo = (...roles: UserRole[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // Current user in req.user is set by protect middleware
     if (!req.user) {
@@ -15,7 +15,7 @@ const restrictTo = (...roles: string[]) => {
 
     const userRole = req.user.role?.name ?? '';
 
-    if (!roles.includes(userRole)) {
+    if (!roles.includes(userRole as UserRole)) {
       return next(
         new AppError(Messages.AUTH_NO_PERMISSION, StatusCodes.FORBIDDEN)
       );

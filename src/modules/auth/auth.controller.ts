@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import { User, Role, Permission, RefreshToken } from '../../models/index.js';
 import { AppError, catchAsync } from '../../utils/index.js';
 import { env } from '../../config/index.js';
-import { StatusCodes, Messages } from '../../constants/index.js';
+import { StatusCodes, Messages, Environments, UserRoles, Status } from '../../constants.js';
 
 /**
  * Sign a JWT token
@@ -27,7 +27,7 @@ const createSendToken = async (user: User, statusCode: number, res: Response) =>
       Date.now() + (env.JWT_COOKIE_EXPIRES_IN as number) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
+    secure: env.NODE_ENV === Environments.PRODUCTION,
   };
 
   res.cookie('jwt', token, cookieOptions);
@@ -52,7 +52,7 @@ const createSendToken = async (user: User, statusCode: number, res: Response) =>
   }
 
   res.status(statusCode).json({
-    status: 'success',
+    status: Status.SUCCESS,
     token,
     role: user.role?.name,
     permissions: user.role?.permissions?.map((p: any) => p.slug) || [],
@@ -69,7 +69,7 @@ export const register = catchAsync(async (req: Request, res: Response, next: Nex
   const { email, password, firstName, lastName } = req.body;
 
   // 1) Find default 'user' role
-  const userRole = await Role.findOne({ where: { name: 'user' } });
+  const userRole = await Role.findOne({ where: { name: UserRoles.USER } });
   if (!userRole) {
     return next(new AppError(Messages.DEFAULT_ROLE_NOT_FOUND, StatusCodes.INTERNAL_SERVER_ERROR));
   }
@@ -129,11 +129,11 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
  * Logout user
  */
 export const logout = (req: Request, res: Response) => {
-  res.cookie('jwt', 'loggedout', {
+  res.cookie('jwt', Status.SUCCESS, {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
-  res.status(StatusCodes.OK).json({ status: 'success' });
+  res.status(StatusCodes.OK).json({ status: Status.SUCCESS });
 };
 
 /**
@@ -152,7 +152,7 @@ export const forgotPassword = catchAsync(async (req: Request, res: Response, nex
 
   // 3) Send it (In a real app, send email. Here we just return it for demonstration as requested)
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     message: 'Token sent to email (Demonstration: token returned in response)',
     resetToken,
   });

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { catchAsync } from '../../utils/index.js';
-import { StatusCodes, Status, Messages, HealthStatus } from '../../constants/index.js';
+import { StatusCodes, Status, Messages, HealthStatus } from '../../constants.js';
 import { sequelize } from '../../config/index.js';
 
 const healthCheck = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

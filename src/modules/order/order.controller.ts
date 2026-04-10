@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Order, OrderItem, MenuItem, Restaurant, User } from '../../models/index.js';
 import { AppError, catchAsync } from '../../utils/index.js';
-import { StatusCodes, KafkaTopics, Messages } from '../../constants/index.js';
+import { StatusCodes, KafkaTopics, Messages, OrderStatuses, UserRoles, Status } from '../../constants.js';
 import { kafkaService } from '../../services/index.js';
 import sequelize from '../../config/database.js';
 
@@ -47,7 +47,7 @@ export const placeOrder = catchAsync(async (req: Request, res: Response, next: N
         restaurantId,
         deliveryAddress,
         totalAmount,
-        status: 'PENDING',
+        status: OrderStatuses.PENDING,
       },
       { transaction: t }
     );
@@ -63,10 +63,10 @@ export const placeOrder = catchAsync(async (req: Request, res: Response, next: N
   });
 
   // 3) Send Kafka event (Asynchronous)
-  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: result.id, status: 'PENDING' }, result.id);
+  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: result.id, status: OrderStatuses.PENDING }, result.id);
 
   res.status(StatusCodes.CREATED).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       order: result,
     },
@@ -98,13 +98,13 @@ export const getOrder = catchAsync(async (req: Request, res: Response, next: Nex
   if (
     order.userId !== req.user!.id &&
     order.restaurant?.ownerId !== req.user!.id &&
-    req.user!.role?.name !== 'admin'
+    req.user!.role?.name !== UserRoles.ADMIN
   ) {
     return next(new AppError(Messages.ORDER_FORBIDDEN_VIEW, StatusCodes.FORBIDDEN));
   }
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       order,
     },
@@ -129,7 +129,7 @@ export const getUserOrders = catchAsync(async (req: Request, res: Response, next
   });
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     results: orders.length,
     total: count,
     page,
@@ -166,7 +166,7 @@ export const updateOrderStatus = catchAsync(async (req: Request, res: Response, 
   await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: order.id, status }, order.id);
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       order,
     },
@@ -191,17 +191,17 @@ export const cancelOrder = catchAsync(async (req: Request, res: Response, next: 
   }
 
   // Only allow cancellation if order is still PENDING
-  if (order.status !== 'PENDING') {
+  if (order.status !== OrderStatuses.PENDING) {
     return next(new AppError(Messages.ORDER_CANCEL_INVALID_STATE(order.status), StatusCodes.BAD_REQUEST));
   }
 
-  await order.update({ status: 'CANCELLED' });
+  await order.update({ status: OrderStatuses.CANCELLED });
 
   // Send Kafka event
-  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: order.id, status: 'CANCELLED' }, order.id);
+  await kafkaService.emit(KafkaTopics.ORDER_STATUS_UPDATES, { orderId: order.id, status: OrderStatuses.CANCELLED }, order.id);
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     message: 'Order cancelled successfully',
   });
 });
@@ -219,7 +219,7 @@ export const getAllOrders = catchAsync(async (req: Request, res: Response, next:
   });
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     results: orders.length,
     data: {
       orders,

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { OrderStatuses } from '../../constants.js';
 
 export const placeOrderSchema = z.object({
   body: z.object({
@@ -15,7 +16,7 @@ export const placeOrderSchema = z.object({
 
 export const updateOrderStatusSchema = z.object({
   body: z.object({
-    status: z.enum(['PENDING', 'PREPARING', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED']),
+    status: z.enum(Object.values(OrderStatuses) as [string, ...string[]]),
   }),
   params: z.object({
     id: z.string().uuid('Invalid order ID'),

@@ -4,9 +4,11 @@ import path from 'path';
 // Load environmental variables from .env file
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
+import { Environments } from '../constants.js';
+
 export const env = {
   PORT: process.env.PORT || 3000,
-  NODE_ENV: process.env.NODE_ENV || 'development',
+  NODE_ENV: process.env.NODE_ENV || Environments.DEVELOPMENT,
   DB_HOST: process.env.DB_HOST || 'localhost',
   DB_PORT: parseInt(process.env.DB_PORT || '5432', 10),
   DB_USER: process.env.DB_USER || 'root',

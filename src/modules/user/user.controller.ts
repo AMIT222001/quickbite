@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../../models/index.js';
 import { catchAsync, AppError } from '../../utils/index.js';
-import { StatusCodes, Messages } from '../../constants/index.js';
+import { StatusCodes, Messages, Status } from '../../constants.js';
 
 /**
  * Get current user profile (via POST /api/v1/user/me)
  */
 export const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       user: req.user,
     },
@@ -37,7 +37,7 @@ export const updateMe = catchAsync(async (req: Request, res: Response, next: Nex
   });
 
   res.status(StatusCodes.OK).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: {
       user: updatedUser[1][0],
     },
@@ -51,7 +51,7 @@ export const deleteMe = catchAsync(async (req: Request, res: Response, next: Nex
   await User.update({ isActive: false }, { where: { id: req.user!.id } });
 
   res.status(StatusCodes.NO_CONTENT).json({
-    status: 'success',
+    status: Status.SUCCESS,
     data: null,
   });
 });

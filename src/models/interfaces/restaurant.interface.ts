@@ -1,4 +1,5 @@
 import { Optional } from 'sequelize';
+import { RestaurantStatus } from '../../constants.js';
 
 export interface RestaurantAttributes {
   id: string;
@@ -6,7 +7,7 @@ export interface RestaurantAttributes {
   address: string;
   phone: string;
   description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: RestaurantStatus;
   ownerId: string;
   createdAt?: Date;
   updatedAt?: Date;

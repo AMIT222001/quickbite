@@ -2,7 +2,9 @@ import pino from 'pino';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const isDev = process.env.NODE_ENV !== 'production';
+import { Environments } from '../constants.js';
+
+const isDev = process.env.NODE_ENV !== Environments.PRODUCTION;
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',

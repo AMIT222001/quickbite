@@ -4,6 +4,7 @@ import { RestaurantAttributes, RestaurantCreationAttributes } from '../interface
 import User from './user.model.js';
 import Menu from './menu.model.js';
 import Order from './order.model.js';
+import { RestaurantStatuses, RestaurantStatus } from '../../constants.js';
 
 class Restaurant extends Model<RestaurantAttributes, RestaurantCreationAttributes> implements RestaurantAttributes {
   declare id: string;
@@ -11,7 +12,7 @@ class Restaurant extends Model<RestaurantAttributes, RestaurantCreationAttribute
   declare address: string;
   declare phone: string;
   declare description?: string;
-  declare status: 'ACTIVE' | 'INACTIVE';
+  declare status: RestaurantStatus;
   declare ownerId: string;
 
   declare owner?: User;
@@ -46,8 +47,8 @@ Restaurant.init(
       allowNull: true,
     },
     status: {
-      type: DataTypes.ENUM('ACTIVE', 'INACTIVE'),
-      defaultValue: 'ACTIVE',
+      type: DataTypes.ENUM(...Object.values(RestaurantStatuses)),
+      defaultValue: RestaurantStatuses.ACTIVE,
     },
     ownerId: {
       type: DataTypes.UUID,

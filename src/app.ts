@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import { AppError } from './utils/index.js';
 import { errorHandler, securityMiddleware, httpLogger, globalRateLimiter, sanitize } from './middleware/index.js';
-import { StatusCodes, Messages } from './constants/index.js';
+import { StatusCodes, Messages } from './constants.js';
 
 // Route imports
 import { readFileSync } from 'fs';
